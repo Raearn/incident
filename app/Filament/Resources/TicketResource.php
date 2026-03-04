@@ -35,6 +35,7 @@ class TicketResource extends Resource
                 Section::make('Incident Details')
                     ->schema([
                         TextInput::make('title')
+                            ->searchable()
                             ->required()
                             ->maxLength(255),
                         Select::make('type')
@@ -45,6 +46,7 @@ class TicketResource extends Resource
                                 'Security' => 'Security',
                                 'Other' => 'Other',
                             ])
+                            ->searchable()
                             ->required(),
                         Select::make('priority')
                             ->options([
@@ -53,8 +55,10 @@ class TicketResource extends Resource
                                 'High' => 'High',
                                 'Critical' => 'Critical',
                             ])
+                            ->searchable()
                             ->required(),
                         DateTimePicker::make('incident_date')
+                            ->searchable()
                             ->required(),
                         RichEditor::make('description')
                             ->required()
