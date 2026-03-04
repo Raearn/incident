@@ -3,8 +3,8 @@
         body {
             background: #0f172a !important;
             background-image:
-                radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 100% 100%, rgba(124, 58, 237, 0.3) 0%, transparent 50%) !important;
+                radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.3) 0%, transparent 80%),
+                radial-gradient(circle at 100% 100%, rgba(124, 58, 237, 0.3) 0%, transparent 80%) !important;
             min-height: 100vh;
             margin: 0;
             color: #fff;
