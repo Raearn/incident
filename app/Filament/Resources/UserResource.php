@@ -7,14 +7,19 @@ use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
 use Filament\Schemas\Schema;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Forms\Components\Section;
+use Filament\Schemas\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -28,7 +33,7 @@ class UserResource extends Resource
     {
         return $schema
             ->components([
-                Forms\Components\Section::make('User Details')
+                Section::make('User Details')
                     ->description('Enter the user details below.')
                     ->schema([
                         Forms\Components\TextInput::make('name')
@@ -45,7 +50,8 @@ class UserResource extends Resource
                             ->required(fn (string $context): bool => $context === 'create')
                             ->maxLength(255),
                     ])
-                    ->columns(2),
+                    ->columns(2)
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -71,18 +77,34 @@ class UserResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                EditAction::make(),
+                EditAction::make()
+                    ->successNotificationTitle('User updated successfully'),
+                DeleteAction::make()
+                    ->successNotificationTitle('User deleted successfully'),
+                RestoreAction::make()
+                    ->successNotificationTitle('User restored successfully'),
+                ForceDeleteAction::make()
+                    ->successNotificationTitle('User permanently deleted successfully'),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    RestoreBulkAction::make(),
+                    ForceDeleteBulkAction::make(),
                 ]),
             ]);
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
+    }
     public static function getRelations(): array
     {
         return [
@@ -94,7 +116,6 @@ class UserResource extends Resource
     {
         return [
             'index' => Pages\ListUsers::route('/'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }
 }
